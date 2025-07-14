@@ -5,6 +5,7 @@ import Comment from './components/comment/Comment';
 import { useEffect, useState } from 'react';
 function App() {
   const [comments ,setComments]=useState([])
+  const [pageCount ,setPageCount]=useState(0)
    useEffect(()=>{
   fetchComment(1)
   },[])
@@ -16,7 +17,10 @@ function App() {
  
   const fetchComment=(pageNumber)=>{
     fetch(`https://jsonplaceholder.typicode.com/comments/?_page=${pageNumber}`)
-    .then(response=>response.json())
+    .then(response=>{
+      setPageCount(Math.ceil(response.headers.get('x-total-count')/10))
+       return response.json()
+    })
     .then(comment=>setComments(comment))
   }
 
@@ -29,7 +33,8 @@ function App() {
   }
 
       <ReactPaginate
-      pageCount={50}
+      pageCount={pageCount}
+
        onPageChange={handlePageClick}
        nextLabel="next >"
         previousLabel="< previous"
@@ -44,8 +49,8 @@ function App() {
        nextLinkClassName='page-link'
        breakLinkClassName='page-link' 
        activeLinkClassName='active'
-        pageRangeDisplayed={5   }
-        renderOnZeroPageCount={null}
+        
+       
       />
  </div>
    
